@@ -18,13 +18,24 @@
 
     <mat-form-field>
       <mat-label>Description</mat-label>
-      <textarea matInput placeholder="" formControlName="description"></textarea>
+      <textarea
+        matInput
+        placeholder=""
+        formControlName="description"
+      ></textarea>
     </mat-form-field>
   </form>
 </div>
 <div mat-dialog-actions>
   <button color="secondary" mat-button mat-dialog-close>Cancel</button>
-  <button color="primary" mat-button [mat-dialog-close]="productForm.getRawValue()" cdkFocusInitial>
+  <button
+    color="primary"
+    mat-button
+    [mat-dialog-close]="
+      data.product ? productForm.getRawValue() : productForm.value
+    "
+    cdkFocusInitial
+  >
     Save
   </button>
 </div>

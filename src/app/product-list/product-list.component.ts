@@ -1,4 +1,3 @@
-import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
@@ -6,6 +5,7 @@ import Product from "../models/product";
 import ToBePersisted from "../models/to-be-persisted.mixin";
 import { ProductDeleteDialogComponent } from "../product-delete-dialog/product-delete-dialog.component";
 import { ProductDetailDialogComponent } from "../product-detail-dialog/product-detail-dialog.component";
+import { ProductsService } from "../services/products.service";
 
 @Component({
   selector: "app-product-list",
@@ -19,9 +19,9 @@ export class ProductListComponent implements OnInit {
   products: Product[] = [];
 
   constructor(
-    private readonly httpClient: HttpClient,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly productsService: ProductsService
   ) {}
 
   ngOnInit(): void {
@@ -30,11 +30,9 @@ export class ProductListComponent implements OnInit {
   }
 
   getProducts() {
-    this.httpClient
-      .get<Product[]>("http://localhost:3000/products")
-      .subscribe((res) => {
-        this.products = res;
-      });
+    this.productsService.getAll().subscribe((res) => {
+      this.products = res;
+    });
   }
 
   onAdd() {
@@ -43,11 +41,8 @@ export class ProductListComponent implements OnInit {
       .afterClosed()
       .subscribe((productToCreate: ToBePersisted<Product> | undefined) => {
         if (!productToCreate) return;
-        this.httpClient
-          .post("http://localhost:3000/products", {
-            ...productToCreate,
-            id: undefined,
-          })
+        this.productsService
+          .createOne(productToCreate)
           .subscribe({ complete: () => this.getProducts() });
       });
   }
@@ -60,8 +55,8 @@ export class ProductListComponent implements OnInit {
       .afterClosed()
       .subscribe((productToUpdate: Product | undefined) => {
         if (!productToUpdate) return;
-        this.httpClient
-          .patch(`http://localhost:3000/products/${productToUpdate.id}`, productToUpdate)
+        this.productsService
+          .updateOne(productToUpdate)
           .subscribe({ complete: () => this.getProducts() });
       });
   }
@@ -72,8 +67,8 @@ export class ProductListComponent implements OnInit {
     });
     deleteDialog.afterClosed().subscribe((confirm: boolean | undefined) => {
       if (!confirm) return;
-      this.httpClient
-        .delete(`http://localhost:3000/products/${product.id}`)
+      this.productsService
+        .deleteOne(product.id)
         .subscribe({ complete: () => this.getProducts() });
     });
   }
