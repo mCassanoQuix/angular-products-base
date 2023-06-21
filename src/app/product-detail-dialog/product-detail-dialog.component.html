@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Product detail</h2>
+<div mat-dialog-content>
+  <form [formGroup]="productForm">
+    <mat-form-field *ngIf="data?.product">
+      <mat-label>Id</mat-label>
+      <input type="number" matInput placeholder="" formControlName="id" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput placeholder="" formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Price</mat-label>
+      <input type="number" matInput placeholder="" formControlName="price" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput placeholder="" formControlName="description"></textarea>
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button color="secondary" mat-button mat-dialog-close>Cancel</button>
+  <button color="primary" mat-button [mat-dialog-close]="productForm.getRawValue()" cdkFocusInitial>
+    Save
+  </button>
+</div>

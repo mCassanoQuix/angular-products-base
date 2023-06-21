@@ -1,12 +1,42 @@
-<h2>Products</h2>
-<ul>
-  <li *ngFor="let product of products">
-    {{ product | json }}
-  </li>
-</ul>
+<app-navbar [title]="title"></app-navbar>
 
-<!-- 
-Copyright Google LLC. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at https://angular.io/license
--->
+<div class="table-container">
+  <mat-table [dataSource]="products" class="mat-elevation-z8">
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+      <mat-cell *matCellDef="let element">{{ element.id }}</mat-cell>
+    </ng-container>
+  
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+      <mat-cell *matCellDef="let element">{{ element.name }}</mat-cell>
+    </ng-container>
+  
+    <ng-container matColumnDef="price">
+      <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
+      <mat-cell *matCellDef="let element">{{
+        element.price | currency
+      }}</mat-cell>
+    </ng-container>
+  
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>
+        <button mat-icon-button (click)="onAdd()">
+          <mat-icon fontIcon="add"></mat-icon>
+        </button>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <button mat-icon-button (click)="onDelete(element)">
+          <mat-icon fontIcon="delete"></mat-icon>
+        </button>
+        <button mat-icon-button (click)="onEdit(element)">
+          <mat-icon fontIcon="edit"></mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+  
+    <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+  </mat-table>
+</div>
+

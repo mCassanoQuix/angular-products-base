@@ -1,7 +1,4 @@
 {
-  "posts": [{ "id": 1, "title": "json-server", "author": "typicode" }],
-  "comments": [{ "id": 1, "body": "some comment", "postId": 1 }],
-  "profile": { "name": "typicode" },
   "shipping": [
     {
       "type": "Overnight",
@@ -33,7 +30,7 @@
       "id": 3,
       "name": "Phone Standard",
       "price": 299,
-      "description": ""
+      "description": "It works fine"
     }
   ]
 }

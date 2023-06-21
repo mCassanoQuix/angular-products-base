@@ -1,23 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  selector: "app-root",
+  templateUrl: "./app.component.html",
 })
-export class AppComponent implements OnInit {
-  title? = '';
-
-  constructor(private readonly activatedRoute: ActivatedRoute) {}
-
-  ngOnInit(): void {
-    this.activatedRoute.title.subscribe((title) => {
-      console.log(title)
-      this.title = title;
-    });
-  }
-}
+export class AppComponent {}
 
 /*
 Copyright Google LLC. All Rights Reserved.

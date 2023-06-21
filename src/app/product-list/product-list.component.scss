@@ -1,0 +1,25 @@
+.mat-column-actions {
+    flex-direction: row-reverse;
+    flex: 0 1 auto;
+    width: 8rem;
+}
+
+@media only screen and (min-width: 1024px) {
+    mat-table {
+        min-width: unset;
+        width: 70vw;
+    }
+}
+
+.table-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/*
+Copyright Google LLC. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at https://angular.io/license
+*/
