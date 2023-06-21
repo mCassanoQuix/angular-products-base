@@ -1,11 +1,11 @@
-import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
+import { Observable } from "rxjs";
 import Product from "../models/product";
-import ToBePersisted from "../models/to-be-persisted.mixin";
 import { ProductDeleteDialogComponent } from "../product-delete-dialog/product-delete-dialog.component";
 import { ProductDetailDialogComponent } from "../product-detail-dialog/product-detail-dialog.component";
+import { ProductService } from "../services/product.service";
 
 @Component({
   selector: "app-product-list",
@@ -16,13 +16,15 @@ export class ProductListComponent implements OnInit {
   title? = "";
 
   tableColumns = ["id", "name", "price", "actions"];
-  products: Product[] = [];
+  products$: Observable<Product[]>;
 
   constructor(
-    private readonly httpClient: HttpClient,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly dialog: MatDialog
-  ) {}
+    private readonly dialog: MatDialog,
+    private readonly productService: ProductService
+  ) {
+    this.products$ = productService.entities$;
+  }
 
   ngOnInit(): void {
     this.title = this.activatedRoute.snapshot.title;
@@ -30,25 +32,16 @@ export class ProductListComponent implements OnInit {
   }
 
   getProducts() {
-    this.httpClient
-      .get<Product[]>("http://localhost:3000/products")
-      .subscribe((res) => {
-        this.products = res;
-      });
+    this.productService.getAll();
   }
 
   onAdd() {
     const addDialog = this.dialog.open(ProductDetailDialogComponent);
     addDialog
       .afterClosed()
-      .subscribe((productToCreate: ToBePersisted<Product> | undefined) => {
+      .subscribe((productToCreate: Product | undefined) => {
         if (!productToCreate) return;
-        this.httpClient
-          .post("http://localhost:3000/products", {
-            ...productToCreate,
-            id: undefined,
-          })
-          .subscribe({ complete: () => this.getProducts() });
+        this.productService.add(productToCreate);
       });
   }
 
@@ -60,9 +53,7 @@ export class ProductListComponent implements OnInit {
       .afterClosed()
       .subscribe((productToUpdate: Product | undefined) => {
         if (!productToUpdate) return;
-        this.httpClient
-          .patch(`http://localhost:3000/products/${productToUpdate.id}`, productToUpdate)
-          .subscribe({ complete: () => this.getProducts() });
+        this.productService.update(productToUpdate);
       });
   }
 
@@ -72,9 +63,7 @@ export class ProductListComponent implements OnInit {
     });
     deleteDialog.afterClosed().subscribe((confirm: boolean | undefined) => {
       if (!confirm) return;
-      this.httpClient
-        .delete(`http://localhost:3000/products/${product.id}`)
-        .subscribe({ complete: () => this.getProducts() });
+      this.productService.delete(product.id);
     });
   }
 }
