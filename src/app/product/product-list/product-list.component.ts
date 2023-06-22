@@ -1,9 +1,14 @@
-import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
-import Product from "../models/product";
-import ToBePersisted from "../models/to-be-persisted.mixin";
+
+import { Store } from "@ngrx/store";
+
+import Product from "../../models/product";
+import ToBePersisted from "../../models/to-be-persisted.mixin";
+
+import { ProductActions, selectProducts } from "../store";
+
 import { ProductDeleteDialogComponent } from "../product-delete-dialog/product-delete-dialog.component";
 import { ProductDetailDialogComponent } from "../product-detail-dialog/product-detail-dialog.component";
 
@@ -16,12 +21,12 @@ export class ProductListComponent implements OnInit {
   title? = "";
 
   tableColumns = ["id", "name", "price", "actions"];
-  products: Product[] = [];
+  products$ = this.store.select(selectProducts);
 
   constructor(
-    private readonly httpClient: HttpClient,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly store: Store
   ) {}
 
   ngOnInit(): void {
@@ -30,11 +35,7 @@ export class ProductListComponent implements OnInit {
   }
 
   getProducts() {
-    this.httpClient
-      .get<Product[]>("http://localhost:3000/products")
-      .subscribe((res) => {
-        this.products = res;
-      });
+    this.store.dispatch(ProductActions.loadProducts());
   }
 
   onAdd() {
@@ -43,12 +44,9 @@ export class ProductListComponent implements OnInit {
       .afterClosed()
       .subscribe((productToCreate: ToBePersisted<Product> | undefined) => {
         if (!productToCreate) return;
-        this.httpClient
-          .post("http://localhost:3000/products", {
-            ...productToCreate,
-            id: undefined,
-          })
-          .subscribe({ complete: () => this.getProducts() });
+        this.store.dispatch(
+          ProductActions.createProduct({ product: productToCreate })
+        );
       });
   }
 
@@ -60,9 +58,9 @@ export class ProductListComponent implements OnInit {
       .afterClosed()
       .subscribe((productToUpdate: Product | undefined) => {
         if (!productToUpdate) return;
-        this.httpClient
-          .patch(`http://localhost:3000/products/${productToUpdate.id}`, productToUpdate)
-          .subscribe({ complete: () => this.getProducts() });
+        this.store.dispatch(
+          ProductActions.updateProduct({ product: productToUpdate })
+        );
       });
   }
 
@@ -72,9 +70,7 @@ export class ProductListComponent implements OnInit {
     });
     deleteDialog.afterClosed().subscribe((confirm: boolean | undefined) => {
       if (!confirm) return;
-      this.httpClient
-        .delete(`http://localhost:3000/products/${product.id}`)
-        .subscribe({ complete: () => this.getProducts() });
+      this.store.dispatch(ProductActions.deleteProduct({ id: product.id }));
     });
   }
 }
